@@ -20,6 +20,9 @@ class MemberRepositoryTest {
 
     @Test
     public void testMember() throws Exception {
+        System.out.println("MemberRepository = " + memberRepository.getClass());
+        // class com.sun.proxy.$Proxy103
+        // spring data jpa가 interface가 구현 클래스를 만들어줌.
         Member member = new Member("younghoon");
         Member savedMember = memberRepository.save(member);
 

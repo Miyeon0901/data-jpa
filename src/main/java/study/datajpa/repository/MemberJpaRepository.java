@@ -8,7 +8,7 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Repository // component scan + jpa의 예외를 spring에서 공통적으로 처리할 수 있는 예외로 변환
 public class MemberJpaRepository {
 
     @PersistenceContext
