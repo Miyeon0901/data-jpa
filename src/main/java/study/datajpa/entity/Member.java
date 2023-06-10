@@ -8,6 +8,10 @@ import javax.persistence.*;
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "username", "age"}) // "team" 넣으면 무한루프 돌 가능성 있음. 가급적이면 연관관계 필드는 ToString 하지 말 것.
+@NamedQuery( // 실무에서 거의 사용 안함. -> 리포지토리 메서드에 쿼리 정의하기를 이용.
+        name="Member.findByUsername",
+        query="select m from Member m where m.username = :username" // application loading 시점에 파싱을 하기때문에 문법오류를 잡을 수 있다는 장점.
+)
 public class Member {
 
     @Id @GeneratedValue
