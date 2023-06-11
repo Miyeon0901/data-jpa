@@ -11,6 +11,7 @@ import study.datajpa.entity.Team;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -147,5 +148,25 @@ class MemberRepositoryTest {
 
         List<Member> result = memberRepository.findByNames(Arrays.asList("AAA", "BBB"));
         result.stream().forEach(System.out::println);
+    }
+
+    @Test
+    public void returnType() {
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> list = memberRepository.findListByUsername("AAA");
+        Member member = memberRepository.findMemberByUsername("AAA");
+        Optional<Member> optional = memberRepository.findOptionalByUsername("AAA");
+        // 단건 조회인데 결과가 여러 건이면 exception 발생
+        // javax.persistence.NonUniqueResultException -> org.springframework.dao.IncorrectResultSizeDataAccessException
+        // repository 에서 사용된 기술과 상관없이 서비스 계층의 springframework exception으로 translation
+
+        System.out.println("findListSize: " + list.size()); // 결과가 없어도 null이 아닌 빈 collection을 반환해 준다.
+        System.out.println("findList: " + list);
+        System.out.println("findMember: " + member); // 결과가 없으면 null이 반환됨.
+        System.out.println("findOptional: " + optional.orElse(new Member("miyeon")));
     }
 }
