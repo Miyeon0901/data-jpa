@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
+import study.datajpa.entity.Team;
 
 import java.util.List;
 
@@ -17,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Rollback(false)
 class MemberRepositoryTest {
 
-    @Autowired
-    MemberRepository memberRepository;
+    @Autowired MemberRepository memberRepository;
+    @Autowired TeamRepository teamRepository;
 
     @Test
     public void testMember() throws Exception {
@@ -93,6 +95,45 @@ class MemberRepositoryTest {
         List<Member> result = memberRepository.findByUsername("AAA");
         Member findMember = result.get(0);
         assertThat(findMember).isEqualTo(member1);
+    }
 
+    @Test
+    public void testQuery() {
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> result = memberRepository.findUser("AAA", 10);
+        Member findMember = result.get(0);
+        assertThat(findMember).isEqualTo(member1);
+    }
+
+    @Test
+    public void findUsernameList() {
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<String> result = memberRepository.findUsernameList();
+        result.stream().forEach(System.out::println);
+    }
+
+    @Test
+    public void findMemberDto() {
+        Team team1 = new Team("team1");
+        Team team2 = new Team("team2");
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+
+        Member member1 = new Member("AAA", 10, team1);
+        Member member2 = new Member("BBB", 20, team2);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<MemberDto> result = memberRepository.findMemberDto();
+        result.stream().forEach(System.out::println);
     }
 }
