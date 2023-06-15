@@ -3,6 +3,10 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -168,5 +172,49 @@ class MemberRepositoryTest {
         System.out.println("findList: " + list);
         System.out.println("findMember: " + member); // 결과가 없으면 null이 반환됨.
         System.out.println("findOptional: " + optional.orElse(new Member("miyeon")));
+    }
+
+    @Test
+    public void paging() {
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        int age = 10;
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.Direction.DESC, "username"); // Pageable 이 조상 인터페이스.
+
+        // when
+        Page<Member> page = memberRepository.findByAge(age, pageRequest); // page니까 알아서 total count 쿼리도 같이 나감.
+//        Slice<Member> slice = memberRepository.findByAge(age, pageRequest); // count 쿼리 안나감. limit가 +1 되서 날아감.
+
+        Page<MemberDto> toMap = page.map(member -> new MemberDto(member.getId(), member.getUsername(), null)); // API로 반환하는건 DTO로!
+
+        // then
+        List<Member> content = page.getContent();
+        long totalElements = page.getTotalElements();
+
+//        for (Member member : content) {
+//            System.out.println("member = " + member);
+//        }
+//
+//        System.out.println("totalElements = " + totalElements);
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getTotalElements()).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(0); // 페이지 번호
+        assertThat(page.getTotalPages()).isEqualTo(2);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
+
+//        List<Member> content = slice.getContent();
+//
+//        assertThat(content.size()).isEqualTo(3);
+//        assertThat(slice.getNumber()).isEqualTo(0);
+//        assertThat(slice.isFirst()).isTrue();
+//        assertThat(slice.hasNext()).isTrue();
+
     }
 }

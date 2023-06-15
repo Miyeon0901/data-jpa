@@ -12,8 +12,8 @@ spring:
       hibernate:
 #        dialect: org.hibernate.dialect.Oracle10gDialect
 #        show_sql: true
-        format_sql: true # ??? ??? ??? ??? ??.
+        format_sql: true # SQL 예쁘게 보여줌.
 
 logging.level:
-  org.hibernate.SQL: debug # SQL? ??? ?? ??? ??.
-#  org.hibernate.type: trace # ????? ???? ? ? ??.
+  org.hibernate.SQL: debug # SQL logger 출력.
+#  org.hibernate.type: trace # 파라미터 보여줌.
