@@ -13,6 +13,8 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,8 @@ class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
+    @PersistenceContext
+    EntityManager em; // 같은 트랜잭션 안에서 같은 entity manager를 씀. 고로 위 3개는 다 같은 entity manager를 씀.
 
     @Test
     public void testMember() throws Exception {
@@ -216,5 +220,27 @@ class MemberRepositoryTest {
 //        assertThat(slice.isFirst()).isTrue();
 //        assertThat(slice.hasNext()).isTrue();
 
+    }
+
+    @Test
+    public void bulkUpdate() {
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        // when
+        int resultCount = memberRepository.bulkAgePlus(20);
+//        em.flush(); // 남아있는 변경 사항이 DB에 반영됨. JPQL 실행 전에 알아서 flush 되므로 별도로 호출할 필요 없음.
+//        em.clear(); // 영속성 컨텍스트 안에 있는 데이터 다 날려버림. clearAutomatically = true 옵션 주면 이것도 필요 없음.
+
+        List<Member> result = memberRepository.findByUsername("member5");
+        Member member5 = result.get(0);
+        System.out.println("member5 = " + member5); // 아직 영속성 컨텍스트에는 age가 40으로 남아있음. 영속성 컨텍스트 날리면 41 되어있음.
+
+        // then
+        assertThat(resultCount).isEqualTo(3);
     }
 }

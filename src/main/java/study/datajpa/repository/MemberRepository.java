@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDto;
@@ -41,5 +42,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "select m from Member m left join m.team t",
             countQuery = "select count(m.username) from Member m") // total count가 데이터가 많아질수록 견적이 안 나오는 경우가 많음. count query를 별도로 짜줄 수 있다.
     Page<Member> findByAge(int age, Pageable pageable); // 반환타입 List도 가능.
+
+    @Modifying(clearAutomatically = true) // 이게 있어야 executeUpdate를 함.
+    @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
+    int bulkAgePlus(@Param("age") int age);
 
 }
