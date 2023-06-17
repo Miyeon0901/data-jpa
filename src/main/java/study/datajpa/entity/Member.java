@@ -12,6 +12,7 @@ import javax.persistence.*;
         name="Member.findByUsername",
         query="select m from Member m where m.username = :username" // application loading 시점에 파싱을 하기때문에 문법오류를 잡을 수 있다는 장점.
 )
+@NamedEntityGraph(name = "Member.all", attributeNodes = @NamedAttributeNode("team"))
 public class Member {
 
     @Id @GeneratedValue
