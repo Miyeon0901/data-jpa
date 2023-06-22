@@ -286,7 +286,39 @@ class MemberRepositoryTest {
             System.out.println("member.teamClass = " + member.getTeam().getClass()); // member.teamClass = class study.datajpa.entity.Team
             System.out.println("member.team = " + member.getTeam().getName());
         });
+    }
 
+    @Test
+    public void queryHint() {
+        // given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush(); // DB와 동기화
+        em.clear(); // 영속성 컨텍스트 날림
 
+        // when
+//        Member findMember = memberRepository.findById(member1.getId()).get();
+//        findMember.setUsername("member2");
+//
+//        em.flush(); // 변경감지. update 날아감.
+//        // 변경감지를 하려면 원본과 변경된 것 2개의 객체를 관리해야함. 메모리를 더 먹음.
+
+        Member findMember = memberRepository.findReadOnlyByUsername(member1.getUsername()); // readOnly라서 snapshot을 만들지 않음.
+        findMember.setUsername("member2");
+
+        em.flush(); // 변경감지 체크를 하지 않음. 쿼리 안나감.
+
+    }
+
+    @Test
+    public void lock() {
+        // given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        // when
+        List<Member> result = memberRepository.findLockByUsername("member1");
     }
 }
