@@ -32,6 +32,8 @@ class MemberRepositoryTest {
     @PersistenceContext
     EntityManager em; // 같은 트랜잭션 안에서 같은 entity manager를 씀. 고로 위 3개는 다 같은 entity manager를 씀.
 
+    @Autowired MemberQueryRepository memberQueryRepository; // 생성자 injection이 더 나으나, test니까 autowired 사용
+
     @Test
     public void testMember() throws Exception {
         System.out.println("MemberRepository = " + memberRepository.getClass());
@@ -320,5 +322,15 @@ class MemberRepositoryTest {
 
         // when
         List<Member> result = memberRepository.findLockByUsername("member1");
+    }
+
+    @Test
+    public void callCustom(){
+        List<Member> result = memberRepository.findMemberCustom();
+    }
+
+    @Test
+    public void queryRepository() {
+        List<Member> result = memberQueryRepository.findAllMembers();
     }
 }
